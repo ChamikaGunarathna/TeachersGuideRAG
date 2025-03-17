@@ -1,0 +1,5 @@
+# Single files
+.env
+
+# Documents
+*.pdf
