@@ -2,5 +2,7 @@ llama-index==0.12.17
 llama-index-core==0.12.17
 llama-index-llms-openai==0.3.18
 llama-index-utils-workflow==0.3.0
+llama-index-vector-stores-qdrant
 python-dotenv==1.0.1
 termcolor==2.5.0
+qdrant_client
