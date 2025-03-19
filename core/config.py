@@ -8,3 +8,4 @@ class Config:
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
     QDRANT_API_KEY = os.getenv('QDRANT_API_KEY')
     QDRANT_URL = os.getenv('QDRANT_URL')
+    PHOENIX_API_KEY = os.getenv('PHOENIX_API_KEY')

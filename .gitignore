@@ -3,3 +3,6 @@
 
 # Documents
 *.pdf
+
+# other types of files
+*.pyc
