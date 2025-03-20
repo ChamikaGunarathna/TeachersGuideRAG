@@ -1,4 +1,5 @@
 import os
+import asyncio
 import logging
 # imports for workflow
 from llama_index.core.workflow import (
@@ -44,7 +45,7 @@ openai_key = Config.OPENAI_API_KEY
 # Initialize Qdrant client
 client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key, timeout=60)
 # collection name
-qdrant_collection_name = 'teachers_guides'
+qdrant_collection_name = 'grade10_11'
 vector_store = QdrantVectorStore(client=client, collection_name=qdrant_collection_name)
 #create a vector index from the vector store
 index = VectorStoreIndex.from_vector_store(vector_store)
@@ -147,10 +148,21 @@ async def process_get_answer(query:str) -> str:
         logger.log_with_color('error', f"Error getting results: {e}")
         return "An error occurred while generating a response."
 
-if __name__=='__main__':
-    import asyncio
-    # create workflow instance
-    query = "What are the learning outcomes of students learning the structure of plant and animal cells?"
-    result = asyncio.run(process_get_answer(query))
-    logger.info(f"Generation successfull : {result}")
+async def main():
+    while True:
+        query = input("\nEnter your question (or type 'exit' to quit): ").strip()
+        
+        if query.lower() in ["exit", "quit"]:
+            print("Exiting the program...")
+            break  # Stop the loop
+        
+        try:
+            result = await process_get_answer(query)
+            logger.info(f"Generation successful: {result}")
+            print(f"\nAnswer: {result}\n")
+        except Exception as e:
+            logger.error(f"Error processing query: {e}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
     

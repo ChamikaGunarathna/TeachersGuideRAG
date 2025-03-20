@@ -44,7 +44,7 @@ openai_key = Config.OPENAI_API_KEY
 # Initialize Qdrant client
 client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key, timeout=60)
 # collection name
-qdrant_collection_name = 'teachers_guides'
+qdrant_collection_name = 'grade10_11'
 vector_store = QdrantVectorStore(client=client, collection_name=qdrant_collection_name)
 #create a vector index from the vector store
 index = VectorStoreIndex.from_vector_store(vector_store)

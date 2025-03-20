@@ -1,7 +1,7 @@
 # Add the project root directory to sys.path to ensure imports work correctly
 import os
-import re
 import sys
+import logging
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(project_root)
 
@@ -12,12 +12,29 @@ from qdrant_client.http.models import VectorParams, Distance
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.core import VectorStoreIndex, StorageContext, SimpleDirectoryReader
 
+# setup logger
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(__name__)
+
 
 # Step 4: Extract Metadata from Filenames
 def extract_metadata_from_filename(filename):
     filename = os.path.basename(filename)
     metadata_part = filename.rsplit(".", 1)[0]  # Remove file extension
-    metadata = re.split(r"[_-]", metadata_part)  # Split on _ or - to get metadata parts
+    metadata_parts = metadata_part.split("_")  # Split on underscore
+    
+    # Define metadata field names
+    metadata_fields = ["subject", "grade", "resource_type"]
+    
+    # Map metadata fields to values
+    metadata = dict(zip(metadata_fields, metadata_parts))
+    
     return metadata
 
 # load documents
@@ -40,7 +57,7 @@ qdrant_api_key = Config.QDRANT_API_KEY
 client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key, timeout=60)
 
 # collection name
-qdrant_collection_name = 'teachers_guides'
+qdrant_collection_name = 'grade10_11'
 
 # Getting existing collections
 collections = client.get_collections().collections
@@ -55,20 +72,21 @@ if qdrant_collection_name not in collection_names:
     # Create storage context with Qdrant
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     # put into vector store index (use OpenAIEmbeddings by default)
+    logger.info(f"Creating collection {qdrant_collection_name} initiated")
     index = VectorStoreIndex(
         documents,
         storage_context=storage_context,
         model="text-embedding-ada-002"
         )
 
-    print(f"Data indexed and saved to Qdrant collection '{qdrant_collection_name}'.")
+    logger.info(f"Data indexed and saved to Qdrant collection '{qdrant_collection_name}'.")
 else:
-    print(f"Collection already exists.")
+    logger.info(f"Collection already exists.")
 
-if True:
-    vector_store = QdrantVectorStore(client=client, collection_name=qdrant_collection_name)
-    #create a vector index from the vector store
-    index = VectorStoreIndex.from_vector_store(vector_store)
-    query_engine = index.as_query_engine()
-    response = query_engine.query("What are the outcomes learning outcomes of students learning the structure of plant and animal cells?")
-    print(response)
+# if True:
+#     vector_store = QdrantVectorStore(client=client, collection_name=qdrant_collection_name)
+#     #create a vector index from the vector store
+#     index = VectorStoreIndex.from_vector_store(vector_store)
+#     query_engine = index.as_query_engine()
+#     response = query_engine.query("What are the outcomes learning outcomes of students learning the structure of plant and animal cells?")
+#     print(response)
