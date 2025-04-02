@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teachers Guide RAG Search</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Teachers Guide Search</h1>
+            <p>Ask any question about the teachers guide</p>
+        </header>
+        
+        <main>
+            <div class="search-container">
+                <form id="search-form" onsubmit="return handleSubmit(event)">
+                    <div class="input-group">
+                        <input 
+                            type="text" 
+                            id="question" 
+                            placeholder="Ask your question here..."
+                            required
+                        >
+                        <button type="submit" id="submit-btn">
+                            <span class="button-text">Search</span>
+                            <div class="loader" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="results-container" style="display: none;">
+                <h2>Answer</h2>
+                <div id="answer" class="answer-box"></div>
+            </div>
+
+            <div id="error-message" class="error-message" style="display: none;">
+                An error occurred while processing your request.
+            </div>
+        </main>
+    </div>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
