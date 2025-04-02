@@ -8,3 +8,5 @@ python-dotenv==1.0.1
 termcolor==2.5.0
 qdrant_client
 arize-phoenix
+fastapi==0.109.2
+uvicorn==0.27.1

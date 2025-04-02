@@ -25,7 +25,7 @@ from llama_index.core.response_synthesizers import BaseSynthesizer
 from llama_index.core.query_engine import CustomQueryEngine
 
 # imports for API keys
-from core.config import Config
+from app.core.config import Config
 
 # setup Arize Phoenix 
 import llama_index.core
