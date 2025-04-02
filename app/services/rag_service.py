@@ -1,4 +1,32 @@
 from app.workflow import process_get_answer
+import re
+
+def clean_text(text: str) -> str:
+    """
+    Clean the text while preserving markdown formatting.
+    
+    Args:
+        text (str): The text to clean
+        
+    Returns:
+        str: The cleaned text with preserved markdown
+    """
+    # Remove any extra whitespace between sections while preserving markdown
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    
+    # Ensure proper spacing for headers
+    text = re.sub(r'(?m)^(#{1,6})(?!#)\s*(.+?)$', r'\n\1 \2\n', text)
+    
+    # Clean up bullet points
+    text = re.sub(r'(?m)^\s*[-*]\s+', '* ', text)
+    
+    # Ensure proper spacing for lists
+    text = re.sub(r'\n{2,}(?=[-*])', '\n', text)
+    
+    # Remove any trailing whitespace
+    text = text.strip()
+    
+    return text
 
 async def get_rag_answer(question: str) -> str:
     """
@@ -12,6 +40,6 @@ async def get_rag_answer(question: str) -> str:
     """
     try:
         answer = await process_get_answer(question)
-        return answer
+        return clean_text(answer)
     except Exception as e:
         raise Exception(f"Error processing question: {str(e)}")

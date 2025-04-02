@@ -33,8 +33,17 @@ async function handleSubmit(event) {
         
         const data = await response.json();
         
-        // Show the answer
-        answerElement.textContent = data.answer;
+        // Configure marked options
+        marked.setOptions({
+            gfm: true,  // GitHub Flavored Markdown
+            breaks: true,  // Convert line breaks to <br>
+            headerIds: false,  // Don't add ids to headers
+            mangle: false,  // Don't escape HTML
+            sanitize: false  // Don't sanitize HTML
+        });
+        
+        // Convert markdown to HTML and display
+        answerElement.innerHTML = marked.parse(data.answer);
         resultsContainer.style.display = 'block';
         
     } catch (error) {

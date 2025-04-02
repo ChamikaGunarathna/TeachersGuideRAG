@@ -6,6 +6,7 @@
     <title>Teachers Guide RAG Search</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -34,7 +35,7 @@
 
             <div class="results-container" style="display: none;">
                 <h2>Answer</h2>
-                <div id="answer" class="answer-box"></div>
+                <div id="answer" class="answer-box markdown-content"></div>
             </div>
 
             <div id="error-message" class="error-message" style="display: none;">

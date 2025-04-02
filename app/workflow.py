@@ -168,6 +168,12 @@ class RefineAnswerEvent(Event):
         context : {context}
         
         *Note : Context taken from a specialized vector database for the application. Therefore under no circumstance, DO NOT add any other context on your own.
+
+        On the output:
+        - Ensure the output is **formatted as valid markdown** without unnecessary escape characters.
+        - Do NOT include any tables.
+        - Do NOT Wrap the response within **triple backticks** (` ```markdown `).
+        Provide the response in a executable markdown code.
         '''
         
         return prompt
