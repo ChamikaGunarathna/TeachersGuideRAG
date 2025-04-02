@@ -214,22 +214,3 @@ async def process_get_answer(query:str) -> str:
     except Exception as e:
         logger.log_with_color('error', f"Error getting results: {e}")
         return "An error occurred while generating a response."
-
-async def main():
-    while True:
-        query = input("\nEnter your question (or type 'exit' to quit): ").strip()
-        
-        if query.lower() in ["exit", "quit"]:
-            print("Exiting the program...")
-            break  # Stop the loop
-        
-        try:
-            result = await process_get_answer(query)
-            logger.info(f"Generation successful: {result}")
-            print(f"\nAnswer: {result}\n")
-        except Exception as e:
-            logger.error(f"Error processing query: {e}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-    
