@@ -1,4 +1,5 @@
 import os
+import asyncio
 import logging
 # imports for workflow
 from llama_index.core.workflow import (
@@ -147,10 +148,21 @@ async def process_get_answer(query:str) -> str:
         logger.log_with_color('error', f"Error getting results: {e}")
         return "An error occurred while generating a response."
 
-if __name__=='__main__':
-    import asyncio
-    # create workflow instance
-    query = "What are the learning outcomes of students learning the structure of plant and animal cells?"
-    result = asyncio.run(process_get_answer(query))
-    logger.info(f"Generation successfull : {result}")
+async def main():
+    while True:
+        query = input("\nEnter your question (or type 'exit' to quit): ").strip()
+        
+        if query.lower() in ["exit", "quit"]:
+            print("Exiting the program...")
+            break  # Stop the loop
+        
+        try:
+            result = await process_get_answer(query)
+            logger.info(f"Generation successful: {result}")
+            print(f"\nAnswer: {result}\n")
+        except Exception as e:
+            logger.error(f"Error processing query: {e}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
     

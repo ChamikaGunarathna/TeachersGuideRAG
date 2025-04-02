@@ -10,8 +10,19 @@ from llama_index.llms.openai import OpenAI
 
 # imports for qdrant vector db
 from qdrant_client import QdrantClient
+from llama_index.core.retrievers import VectorIndexRetriever
+from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.vector_stores.qdrant import QdrantVectorStore
 from llama_index.core import VectorStoreIndex
+
+# imports for prompting
+from llama_index.core import PromptTemplate
+from llama_index.core.retrievers import BaseRetriever
+from llama_index.core import get_response_synthesizer
+from llama_index.core.response_synthesizers import BaseSynthesizer
+
+# imports for custom query engine
+from llama_index.core.query_engine import CustomQueryEngine
 
 # imports for API keys
 from core.config import Config
@@ -36,6 +47,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# setup prompts
+qa_prompt = PromptTemplate(
+    "Context information is below.\n"
+    "---------------------\n"
+    "{context_str}\n"
+    "---------------------\n"
+    "Given the context information and not prior knowledge, "
+    "answer the query.\n"
+    "Query: {query_str}\n"
+    "Answer: "
+)
+
 # Setting qdrant keys
 qdrant_url = Config.QDRANT_URL
 qdrant_api_key = Config.QDRANT_API_KEY
@@ -49,7 +72,51 @@ qdrant_collection_name = 'grade10_11'
 vector_store = QdrantVectorStore(client=client, collection_name=qdrant_collection_name)
 #create a vector index from the vector store
 index = VectorStoreIndex.from_vector_store(vector_store)
-query_engine = index.as_query_engine()
+
+# configure retriever
+retriever = VectorIndexRetriever(
+    index=index,
+    similarity_top_k=5,
+)
+
+# configure response synthesizer
+llm = OpenAI(
+            model="gpt-4o",
+            api_key= openai_key
+            )
+
+# synthersizer
+synthesizer  = get_response_synthesizer(
+    llm=llm,
+    response_mode="compact", #refine
+)
+
+# Custom query engine
+class RAGStringQueryEngine(CustomQueryEngine):
+    """RAG String Query Engine."""
+
+    retriever: BaseRetriever
+    response_synthesizer: BaseSynthesizer
+    llm: OpenAI
+    qa_prompt: PromptTemplate
+
+    def custom_query(self, query_str: str):
+        nodes = self.retriever.retrieve(query_str)
+
+        context_str = "\n\n".join([n.node.get_content() for n in nodes])
+        response = self.llm.complete(
+            qa_prompt.format(context_str=context_str, query_str=query_str)
+        )
+
+        return str(response)
+
+# assemble query engine
+query_engine = RAGStringQueryEngine(
+    retriever=retriever,
+    response_synthesizer=synthesizer,
+    llm=llm,
+    qa_prompt=qa_prompt,
+)
 
 # chat agent
 class ChatAgent():
